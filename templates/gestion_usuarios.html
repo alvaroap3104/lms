@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Usuarios - Tivotal</title>
+    <!-- Se enlaza la hoja de estilos exclusiva para Gestión de Usuarios -->
+    <link rel="stylesheet" href="/static/styles_usuarios.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- SIDEBAR (igual que en las demás páginas) -->
+    <section class="sidebar">
+      <div class="nav-header">
+        <p class="logo">Tivotal</p>
+        <i class="bx bx-menu btn-menu"></i>
+      </div>
+      <ul class="nav-links">
+        <li>
+          <a href="/">
+            <i class="bx bx-home-alt-2"></i>
+            <span class="title">Home</span>
+          </a>
+          <span class="tooltip">Home</span>
+        </li>
+        <li>
+          <a href="/configurar_ip">
+            <i class="bx bx-network-chart"></i>
+            <span class="title">Configurar IP</span>
+          </a>
+          <span class="tooltip">Configurar IP</span>
+        </li>
+        <li>
+          <a href="/gestion_usuarios">
+            <i class="bx bx-user-circle"></i>
+            <span class="title">Gestión de Usuarios</span>
+          </a>
+          <span class="tooltip">Gestión de Usuarios</span>
+        </li>
+        <li>
+          <a href="/ssh_terminal">
+            <i class="bx bx-terminal"></i>
+            <span class="title">Terminal SSH</span>
+          </a>
+          <span class="tooltip">Terminal SSH</span>
+        </li>
+        <li>
+          <a href="/almacenamiento">
+            <i class="bx bx-hdd"></i>
+            <span class="title">Almacenamiento y RAID</span>
+          </a>
+          <span class="tooltip">Almacenamiento y RAID</span>
+        </li>
+      </ul>
+      <div class="theme-wrapper">
+        <i class="bx bxs-moon theme-icon"></i>
+        <p>Dark Theme</p>
+        <div class="theme-btn">
+          <span class="theme-ball"></span>
+        </div>
+      </div>
+    </section>
+    
+    <!-- CONTENIDO CENTRAL -->
+    <section class="home">
+      <div class="container">
+        <h1>Gestión de Usuarios</h1>
+        
+        <!-- Big Box: Usuarios (Crear y Eliminar Usuario) -->
+        <div class="big-box user-box">
+          <h2>Usuarios</h2>
+          <div class="actions">
+            <!-- Acción: Crear Usuario -->
+            <div class="action-card" id="crear-usuario">
+              <div class="card-icon">
+                <i class="bx bx-user-plus"></i>
+              </div>
+              <h3>Crear Usuario</h3>
+              <form id="create-user-form" method="POST" action="/crear_usuario">
+                <input type="text" name="nombre" placeholder="Nombre de Usuario" required>
+                <input type="text" name="home" placeholder="Directorio Home" required>
+                <input type="password" name="password" placeholder="Contraseña" required>
+                <button type="submit">Crear</button>
+              </form>
+            </div>
+            <!-- Acción: Eliminar Usuario -->
+            <div class="action-card" id="eliminar-usuario">
+              <div class="card-icon">
+                <i class="bx bx-user-x"></i>
+              </div>
+              <h3>Eliminar Usuario</h3>
+              <form id="delete-user-form" method="POST" action="/eliminar_usuario">
+                <input type="text" name="nombre" placeholder="Nombre de Usuario" required>
+                <button type="submit">Eliminar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Big Box: Grupos (Crear Grupo, Añadir y Eliminar Usuario de Grupo) -->
+        <div class="big-box group-box">
+          <h2>Grupos</h2>
+          <div class="actions">
+            <!-- Acción: Crear Grupo -->
+            <div class="action-card" id="crear-grupo">
+              <div class="card-icon">
+                <i class="bx bx-plus-circle"></i>
+              </div>
+              <h3>Crear Grupo</h3>
+              <form id="create-group-form" method="POST" action="/crear_grupo">
+                <input type="text" name="nombre_grupo" placeholder="Nombre del Grupo" required>
+                <button type="submit">Crear</button>
+              </form>
+            </div>
+            <!-- Acción: Añadir Usuario a Grupo -->
+            <div class="action-card" id="anadir-usuario-grupo">
+              <div class="card-icon">
+                <i class="bx bx-group"></i>
+              </div>
+              <h3>Añadir Usuario a Grupo</h3>
+              <form id="add-to-group-form" method="POST" action="/add_to_group">
+                <input type="text" name="nombre" placeholder="Nombre de Usuario" required>
+                <input type="text" name="grupo" placeholder="Nombre del Grupo" required>
+                <button type="submit">Añadir</button>
+              </form>
+            </div>
+            <!-- Acción: Eliminar Usuario de Grupo -->
+            <div class="action-card" id="eliminar-usuario-grupo">
+              <div class="card-icon">
+                <i class="bx bx-group"></i>
+              </div>
+              <h3>Eliminar Usuario de Grupo</h3>
+              <form id="remove-from-group-form" method="POST" action="/remove_from_group">
+                <input type="text" name="nombre" placeholder="Nombre de Usuario" required>
+                <input type="text" name="grupo" placeholder="Nombre del Grupo" required>
+                <button type="submit">Eliminar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Big Box: Comprobaciones (Ver Usuarios y Ver Grupos) -->
+        <div class="big-box check-box">
+          <h2>Comprobaciones</h2>
+          <div class="actions">
+            <!-- Acción: Ver Usuarios -->
+            <div class="action-card" id="ver-usuarios">
+              <div class="card-icon">
+                <i class="bx bx-user"></i>
+              </div>
+              <h3>Ver Usuarios</h3>
+              <form id="view-users-form" method="GET" action="/ver_usuarios">
+                <button type="submit">Ver Usuarios</button>
+              </form>
+            </div>
+            <!-- Acción: Ver Grupos -->
+            <div class="action-card" id="ver-grupos">
+              <div class="card-icon">
+                <i class="bx bx-group"></i>
+              </div>
+              <h3>Ver Grupos</h3>
+              <form id="view-groups-form" method="GET" action="/ver_grupos">
+                <button type="submit">Ver Grupos</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </section>
+    
+    <!-- Script: Manejo del Sidebar y del Modo Oscuro -->
+    <script>
+      const btn_menu = document.querySelector(".btn-menu");
+      const side_bar = document.querySelector(".sidebar");
+
+      btn_menu.addEventListener("click", function () {
+        side_bar.classList.toggle("expand");
+        changebtn();
+      });
+
+      function changebtn() {
+        if (side_bar.classList.contains("expand")) {
+          btn_menu.classList.replace("bx-menu", "bx-menu-alt-right");
+        } else {
+          btn_menu.classList.replace("bx-menu-alt-right", "bx-menu");
+        }
+      }
+
+      const btn_theme = document.querySelector(".theme-btn");
+      const theme_ball = document.querySelector(".theme-ball");
+
+      const localData = localStorage.getItem("theme");
+
+      if (localData == null) {
+        localStorage.setItem("theme", "light");
+      }
+
+      if (localData == "dark") {
+        document.body.classList.add("dark-mode");
+        theme_ball.classList.add("dark");
+      } else if (localData == "light") {
+        document.body.classList.remove("dark-mode");
+        theme_ball.classList.remove("dark");
+      }
+
+      btn_theme.addEventListener("click", function () {
+        document.body.classList.toggle("dark-mode");
+        theme_ball.classList.toggle("dark");
+        if (document.body.classList.contains("dark-mode")) {
+          localStorage.setItem("theme", "dark");
+        } else {
+          localStorage.setItem("theme", "light");
+        }
+      });
+    </script>
+  </body>
+</html>
