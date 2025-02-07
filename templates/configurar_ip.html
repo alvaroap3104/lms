@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configurar IP Estática - Tivotal</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
+    <style>
+      /* Reglas adicionales para modo oscuro en toda la página */
+      body.dark-mode {
+        background-color: #121212;
+        color: #ffffff; /* Cambio el color del texto a blanco */
+      }
+      body.dark-mode .home {
+        background-color: #1d1b31;
+      }
+      body.dark-mode a {
+        color: #66b2ff;
+      }
+      body.dark-mode .container {
+        background-color: #222;
+        color: #fff; /* Cambio el color del texto dentro del contenedor */
+      }
+      /* Estilo para el formulario */
+      body.dark-mode form {
+        background-color: #333;
+        padding: 20px;
+        border-radius: 8px;
+        color: #fff; /* Cambio el color del texto del formulario */
+      }
+      body.dark-mode input, body.dark-mode button {
+        background-color: #444;
+        border: 1px solid #666;
+        color: #fff; /* Cambio el color del texto dentro de los inputs y botones */
+      }
+      body.dark-mode input:focus, body.dark-mode button:hover {
+        background-color: #555;
+      }
+      body.dark-mode label {
+        color: #ccc; /* Cambio el color de las etiquetas a un tono claro */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar (igual que en index.html) -->
+    <section class="sidebar">
+      <div class="nav-header">
+        <p class="logo">Tivotal</p>
+        <i class="bx bx-menu btn-menu"></i>
+      </div>
+      <ul class="nav-links">
+        <li>
+          <a href="/">
+            <i class="bx bx-home-alt-2"></i>
+            <span class="title">Home</span>
+          </a>
+          <span class="tooltip">Home</span>
+        </li>
+        <li>
+          <a href="/configurar_ip">
+            <i class="bx bx-network-chart"></i>
+            <span class="title">Configurar IP</span>
+          </a>
+          <span class="tooltip">Configurar IP</span>
+        </li>
+        <li>
+          <a href="/gestion_usuarios">
+            <i class="bx bx-user-circle"></i>
+            <span class="title">Gestión de Usuarios</span>
+          </a>
+          <span class="tooltip">Gestión de Usuarios</span>
+        </li>
+        <li>
+          <a href="/ssh_terminal">
+            <i class="bx bx-terminal"></i>
+            <span class="title">Terminal SSH</span>
+          </a>
+          <span class="tooltip">Terminal SSH</span>
+        </li>
+        <li>
+          <a href="/almacenamiento">
+            <i class="bx bx-hdd"></i>
+            <span class="title">Almacenamiento y RAID</span>
+          </a>
+          <span class="tooltip">Almacenamiento y RAID</span>
+        </li>
+      </ul>
+      <div class="theme-wrapper">
+        <i class="bx bxs-moon theme-icon"></i>
+        <p>Dark Theme</p>
+        <div class="theme-btn">
+          <span class="theme-ball"></span>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Contenido Central (adaptado para configurar IP) -->
+    <section class="home">
+      <div class="container">
+        <h1>Configurar IP Estática</h1>
+        <form id="ip-form" method="POST" action="/configurar">
+          <label for="ip-address">Dirección IP:</label>
+          <input type="text" id="ip-address" name="ip-address" required>
+
+          <label for="subnet-mask">Máscara de Subred:</label>
+          <input type="text" id="subnet-mask" name="subnet-mask" required>
+
+          <label for="gateway">Puerta de enlace:</label>
+          <input type="text" id="gateway" name="gateway" required>
+
+          <label for="dns1">DNS Primario:</label>
+          <input type="text" id="dns1" name="dns1" required>
+
+          <label for="dns2">DNS Secundario:</label>
+          <input type="text" id="dns2" name="dns2" required>
+
+          <button type="submit">Configurar</button>
+        </form>
+      </div>
+    </section>
+    
+    <!-- Script: Igual que en index.html para manejar el sidebar y el tema -->
+    <script>
+        const btn_menu = document.querySelector(".btn-menu");
+        const side_bar = document.querySelector(".sidebar");
+      
+        btn_menu.addEventListener("click", function () {
+          side_bar.classList.toggle("expand");
+          changebtn();
+        });
+      
+        function changebtn() {
+          if (side_bar.classList.contains("expand")) {
+            btn_menu.classList.replace("bx-menu", "bx-menu-alt-right");
+          } else {
+            btn_menu.classList.replace("bx-menu-alt-right", "bx-menu");
+          }
+        }
+      
+        const btn_theme = document.querySelector(".theme-btn");
+        const theme_ball = document.querySelector(".theme-ball");
+        const header = document.querySelector("h1");  // Seleccionamos el encabezado para cambiar el color
+      
+        const localData = localStorage.getItem("theme");
+      
+        if (localData == null) {
+          localStorage.setItem("theme", "light");
+        }
+      
+        if (localData == "dark") {
+          document.body.classList.add("dark-mode");
+          theme_ball.classList.add("dark");
+          header.style.color = "white";  // Cambiamos el color del encabezado a blanco en modo oscuro
+        } else if (localData == "light") {
+          document.body.classList.remove("dark-mode");
+          theme_ball.classList.remove("dark");
+          header.style.color = "black";  // Cambiamos el color del encabezado a negro en modo claro
+        }
+      
+        btn_theme.addEventListener("click", function () {
+          document.body.classList.toggle("dark-mode");
+          theme_ball.classList.toggle("dark");
+      
+          if (document.body.classList.contains("dark-mode")) {
+            localStorage.setItem("theme", "dark");
+            header.style.color = "white";  // Cambiar a blanco cuando el tema es oscuro
+          } else {
+            localStorage.setItem("theme", "light");
+            header.style.color = "black";  // Cambiar a negro cuando el tema es claro
+          }
+        });
+      </script>      
+  </body>
+</html>
