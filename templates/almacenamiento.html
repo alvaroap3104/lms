@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Almacenamiento y RAID</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <!-- Se carga Chart.js desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* Ajuste extra para los canvas de cada disco */
+      .discos {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: start;
+      }
+
+      .disco canvas {
+        width: 100px !important;
+        height: 100px !important;
+      }
+
+      .dark-mode .home {
+        background-color: #1d1b31;
+      }
+      .dark-mode .container {
+        background-color: #333;
+      }
+
+      .dark-mode h1, h2, h3 {
+        color: #fff;
+      }
+
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar (mismo que en la página de Tivotal) -->
+    <section class="sidebar">
+      <div class="nav-header">
+        <p class="logo">Tivotal</p>
+        <i class="bx bx-menu btn-menu"></i>
+      </div>
+      <ul class="nav-links">
+        <li>
+          <a href="/">
+            <i class="bx bx-home-alt-2"></i>
+            <span class="title">Inicio</span>
+          </a>
+          <span class="tooltip">Inicio</span>
+        </li>
+        <li>
+          <a href="/configurar_ip">
+            <i class="bx bx-network-chart"></i>
+            <span class="title">Configurar IP</span>
+          </a>
+          <span class="tooltip">Configurar IP</span>
+        </li>
+        <li>
+          <a href="/gestion_usuarios">
+            <i class="bx bx-user-circle"></i>
+            <span class="title">Gestión de Usuarios</span>
+          </a>
+          <span class="tooltip">Gestión de Usuarios</span>
+        </li>
+        <li>
+          <a href="/ssh_terminal">
+            <i class="bx bx-terminal"></i>
+            <span class="title">Terminal SSH</span>
+          </a>
+          <span class="tooltip">Terminal SSH</span>
+        </li>
+        <li>
+          <a href="/almacenamiento" class="active">
+            <i class="bx bx-hdd"></i>
+            <span class="title">Almacenamiento RAID</span>
+          </a>
+          <span class="tooltip">Almacenamiento RAID</span>
+        </li>
+      </ul>
+      <div class="theme-wrapper">
+        <i class="bx bxs-moon theme-icon"></i>
+        <p>Dark Theme</p>
+        <div class="theme-btn">
+          <span class="theme-ball"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contenido principal -->
+    <section class="home">
+      <div class="container">
+        <h1>Gestión de Almacenamiento y RAID</h1>
+        
+        <!-- Sección: Discos Disponibles -->
+        <h2>Discos Disponibles</h2>
+        <div class="discos">
+          {% for disco in discos %}
+            <div class="disco">
+              <h3>Disco: {{ disco.nombre }} ({{ disco.tamaño | filesizeformat }})</h3>
+              <canvas id="disco-{{ disco.nombre }}"></canvas>
+            </div>
+          {% endfor %}
+        </div>
+        
+        <!-- Sección: Formulario para Configurar RAID -->
+        <h2>Configurar RAID</h2>
+        <form method="POST" action="{{ url_for('almacenamiento') }}">
+          <label for="discos">Selecciona discos:</label>
+          <select name="discos" id="discos" multiple>
+            {% for disco in discos %}
+              <option value="{{ disco.nombre }}">{{ disco.nombre }} ({{ disco.tamaño | filesizeformat }})</option>
+            {% endfor %}
+          </select>
+
+          <label for="raid">Tipo de RAID:</label>
+          <select name="raid" id="raid">
+            <option value="0">RAID 0</option>
+            <option value="1">RAID 1</option>
+            <option value="5">RAID 5</option>
+          </select>
+
+          <button type="submit">Configurar RAID</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Script para generar los gráficos de uso de disco con Chart.js -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        {% for disco in discos %}
+          var ctx = document.getElementById('disco-{{ disco.nombre }}').getContext('2d');
+          new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              labels: ['Usado', 'Libre'],
+              datasets: [{
+                data: [{{ disco.usado }}, {{ 100 - disco.usado }}],
+                backgroundColor: ['#FF6384', '#36A2EB']
+              }]
+            },
+            options: {
+              plugins: {
+                legend: { display: true },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      return context.label + ': ' + context.raw.toFixed(2) + '%';
+                    }
+                  }
+                }
+              },
+              responsive: true,
+              maintainAspectRatio: true
+            }
+          });
+        {% endfor %}
+      });
+    </script>
+
+    <!-- Scripts para el Sidebar y el Modo Oscuro -->
+    <script>
+      // Control del botón del sidebar
+      const btn_menu = document.querySelector(".btn-menu");
+      const side_bar = document.querySelector(".sidebar");
+
+      btn_menu.addEventListener("click", function () {
+        side_bar.classList.toggle("expand");
+        changebtn();
+      });
+
+      function changebtn() {
+        if (side_bar.classList.contains("expand")) {
+          btn_menu.classList.replace("bx-menu", "bx-menu-alt-right");
+        } else {
+          btn_menu.classList.replace("bx-menu-alt-right", "bx-menu");
+        }
+      }
+
+      // Control del modo oscuro
+      const btn_theme = document.querySelector(".theme-btn");
+      const theme_ball = document.querySelector(".theme-ball");
+      const localData = localStorage.getItem("theme");
+
+      if (localData == null) {
+        localStorage.setItem("theme", "light");
+      }
+
+      if (localData == "dark") {
+        document.body.classList.add("dark-mode");
+        theme_ball.classList.add("dark");
+      } else if (localData == "light") {
+        document.body.classList.remove("dark-mode");
+        theme_ball.classList.remove("dark");
+      }
+
+      btn_theme.addEventListener("click", function () {
+        document.body.classList.toggle("dark-mode");
+        theme_ball.classList.toggle("dark");
+        if (document.body.classList.contains("dark-mode")) {
+          localStorage.setItem("theme", "dark");
+        } else {
+          localStorage.setItem("theme", "light");
+        }
+      });
+    </script>
+  </body>
+</html>
